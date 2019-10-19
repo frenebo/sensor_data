@@ -1,11 +1,15 @@
-import math
+from scipy.stats import norm
+import numpy as np
 
-def normpdf(x, mean, sd):
-    sd_squared = sd**2
-    denom = (2*math.pi*sd_squared)**0.5
-    num = math.exp(-(x-mean)**2/(2*sd_squared))
-    return num / denom
+def get_error_band_std_dev(error_band, error_confidence):
+    std_devs = -norm.ppf((1-error_confidence)/2)
 
-def get_error_band_noise(error_band, range):
-    0.99
-    # retu
+    std_dev = error_band/std_devs
+
+    return std_dev
+
+def gaussian_random(std_dev):
+    return np.random.normal(0, std_dev)
+
+def list_std_dev(list):
+    return np.std(list)
