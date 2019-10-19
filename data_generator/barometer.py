@@ -1,5 +1,5 @@
 from .sensor import Sensor
-from .utils import get_error_band_std_dev, gaussian_random
+from .sensor_error_generator import SensorErrorGenerator
 
 """
 Part number: MPRLS0025PA00001A
@@ -28,32 +28,27 @@ class Barometer(Sensor):
         self.output_min = 0.1*(2**24)
         self.output_max = 0.9*(2**24)
 
+        output_range = self.output_max - self.output_min
+
         self.pressure_min = 0 # psi
         self.pressure_max = 25 # psi
 
         pressure_range = self.pressure_max - self.pressure_min
 
-        total_error_band = 0.015
+        total_error_band = 0.015*output_range
         total_error_band_confidence = 0.99
-        total_std_dev = get_error_band_std_dev(
-            pressure_range * total_error_band,
-            total_error_band_confidence
-        )
 
-        # Including initial offset and further reading offsets
-        # total_std_dev^2 = initial_std_dev^2 + reading_std_dev^2
-        # we assume initial_std_dev = reading_std_dev, giving
-        # (total_std_dev^2)/2 = initial_std_dev^2 = reading_std_dev^2
-        # initial_std_dev = reading_std_dev = sqrt((total_std_dev^2)/2)
-        initial_offset_std_dev = self.reading_std_dev = ( (total_std_dev**2) / 2 )**0.5
-
-        self.initial_offset = gaussian_random(initial_offset_std_dev)
+        self.error_generator = SensorErrorGenerator(total_error_band, total_error_band_confidence)
 
     def get_reading(self, real_psi):
         """
         Pressure range
         """
-        psi_value = self.initial_offset + real_psi + gaussian_random(self.reading_std_dev)
-        ideal_output = self.output_min + (psi_value - self.pressure_min)*(self.output_max - self.output_min)/(self.pressure_max - self.pressure_min)
+        # psi_value = self.initial_offset + real_psi + gaussian_random(self.reading_std_dev)
+        ideal_output = self.output_min + (real_psi - self.pressure_min)*(self.output_max - self.output_min)/(self.pressure_max - self.pressure_min)
 
-        return int(ideal_output)
+        error = self.error_generator.get_reading_error()
+
+        return int(ideal_output + error)
+
+        # return int(ideal_output)
