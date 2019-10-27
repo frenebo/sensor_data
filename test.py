@@ -39,9 +39,7 @@ def test_gps():
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
-    # x, y = np.random.rand(2, 100) * 4
-    # print(x)
-    # print(y)
+
     hist, xedges, yedges = np.histogram2d(
         x,
         y,
@@ -61,10 +59,20 @@ def test_gps():
     print("showing")
     plt.show(block=True)
 
+def test_imu():
+    raise Exception("Unimplemented")
+
 if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        raise ValueError("Takes one argument: thing to test (e.x. barometer, gps...)")
+    elif len(sys.argv) > 2:
+        raise ValueError("Takes only one argument: thing to test")
+
     if sys.argv[1] == "barometer":
         test_barometer()
     elif sys.argv[1] == "gps":
         test_gps()
+    elif sys.argv[1] == "imu":
+        test_imu()
     else:
         raise Exception("invalid arg")
