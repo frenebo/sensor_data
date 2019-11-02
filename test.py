@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 from data_generator.barometer import Barometer
+from data_generator.imu import Imu
 from data_generator.gps import Gps
 from data_generator.utils import list_std_dev
 import sys

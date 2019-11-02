@@ -15,6 +15,8 @@ class SensorErrorGenerator:
         # initial_std_dev = reading_std_dev = sqrt((total_std_dev^2)/2)
         initial_offset_std_dev = self.reading_std_dev = ( (total_std_dev**2) / 2 )**0.5
 
+        # Puts half randomness in initial offset, half in subsequent readings - arbitrary decision, can be changed
+
         self.initial_offset = gaussian_random(initial_offset_std_dev)
 
     def get_reading_error(self):
